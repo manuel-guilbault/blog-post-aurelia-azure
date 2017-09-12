@@ -96,7 +96,7 @@
               "value": "6.5.0"
             },
             {
-              "name": "webAppContentStorageAndContainer",
+              "name": "StorageContainer.HostAndContainer",
               "value": "[variables('webAppContentStorageAndContainer')]"
             }
           ]
