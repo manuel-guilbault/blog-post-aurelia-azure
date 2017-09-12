@@ -11,7 +11,7 @@
           "matchCondition": {
               "route": "/"
           },
-          "backendUri": "https://%StorageContainer.Uri%/index.html%StorageContainer.SasToken%"
+          "backendUri": "https://%StorageContainer.HostAndContainer%/index.html%StorageContainer.SasToken%"
       }
   }
 }
