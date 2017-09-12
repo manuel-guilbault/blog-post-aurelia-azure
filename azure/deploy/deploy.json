@@ -114,15 +114,15 @@
     }
   ],
   "outputs": {
-    "Azure.AppService.Name": {
+    "AppService.Name": {
       "type": "string",
       "value": "[variables('functionAppName')]"
     },
-    "Azure.StorageAccount.Name": {
+    "StorageAccount.Name": {
       "type": "string",
       "value": "[variables('storageAccountName')]"
     },
-    "Azure.StorageContainer.Name": {
+    "StorageContainer.Name": {
       "type": "string",
       "value": "[variables('blobContainerName')]"
     }
