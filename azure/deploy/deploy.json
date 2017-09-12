@@ -32,7 +32,7 @@
     "functionAppName": "[parameters('appName')]",
     "hostingPlanName": "[parameters('appName')]",
     "blobContainerName": "[parameters('blobContainerName')]",
-    "storageAccountName": "[concat(take(uniquestring(resourceGroup().id), 6), take(variables('functionAppName'), 18))]",
+    "storageAccountName": "[concat(take(uniquestring(resourceGroup().id), 6), take(replace(variables('functionAppName'), '-', ''), 18))]",
     "storageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
     "storageHostAndContainer": "[concat(variables('storageAccountName'), '.blob.core.windows.net/', variables('blobContainerName'))]"
   },
