@@ -31,9 +31,10 @@
   "variables": {
     "functionAppName": "[parameters('appName')]",
     "hostingPlanName": "[parameters('appName')]",
-    "storageAccountName": "[concat(take(replace(parameters('appName'), '-', ''), 24))]",
+    "blobContainerName": "[parameters('blobContainerName')]",
+    "storageAccountName": "[concat(take(uniquestring(resourceGroup().id), 6), take(variables('functionAppName'), 18))]",
     "storageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-    "webAppContentStorageAndContainer": "[concat(variables('storageAccountName'), '.blob.core.windows.net/', parameters('blobContainerName'))]"
+    "storageHostAndContainer": "[concat(variables('storageAccountName'), '.blob.core.windows.net/', variables('blobContainerName'))]"
   },
   "resources": [
     {
@@ -97,7 +98,7 @@
             },
             {
               "name": "StorageContainer.HostAndContainer",
-              "value": "[variables('webAppContentStorageAndContainer')]"
+              "value": "[variables('storageHostAndContainer')]"
             }
           ]
         }
@@ -105,9 +106,13 @@
     }
   ],
   "outputs": {
-    "webAppContentStorageAndContainer": {
+    "Azure.StorageAccount.Name": {
       "type": "string",
-      "value": "[variables('webAppContentStorageAndContainer')]"
+      "value": "[variables('storageAccountName')]"
+    },
+    "Azure.StorageContainer.Name": {
+      "type": "string",
+      "value": "[variables('blobContainerName')]"
     }
   }
 }
