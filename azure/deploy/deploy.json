@@ -4,6 +4,7 @@
   "parameters": {
     "appName": {
       "type": "string",
+      "defaultValue": "[concat('func-app-', uniquestring(resourceGroup().id))]",
       "metadata": {
         "description": "The name of your webapp."
       }
@@ -32,7 +33,7 @@
     "functionAppName": "[parameters('appName')]",
     "hostingPlanName": "[parameters('appName')]",
     "blobContainerName": "[parameters('blobContainerName')]",
-    "storageAccountName": "[concat(take(uniquestring(resourceGroup().id), 6), take(replace(variables('functionAppName'), '-', ''), 18))]",
+    "storageAccountName": "[take(replace(variables('functionAppName'), '-', ''), 24)]",
     "storageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
     "storageHostAndContainer": "[concat(variables('storageAccountName'), '.blob.core.windows.net/', variables('blobContainerName'))]"
   },
@@ -93,6 +94,13 @@
               "value": "~1"
             },
             {
+              "metadata": {
+                "comment": "This will enable proxy functions. See https://github.com/Azure/Azure-Functions/issues/356"
+              },
+              "name": "ROUTING_EXTENSION_VERSION",
+              "value": "~0.2"
+            },
+            {
               "name": "WEBSITE_NODE_DEFAULT_VERSION",
               "value": "6.5.0"
             },
@@ -106,6 +114,10 @@
     }
   ],
   "outputs": {
+    "Azure.AppService.Name": {
+      "type": "string",
+      "value": "[variables('functionAppName')]"
+    },
     "Azure.StorageAccount.Name": {
       "type": "string",
       "value": "[variables('storageAccountName')]"
