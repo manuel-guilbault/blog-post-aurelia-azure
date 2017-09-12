@@ -5,13 +5,13 @@
           "matchCondition": {
               "route": "/{*path}"
           },
-          "backendUri": "%StorageContainer.Uri%/{path}%StorageContainer.SasToken%"
+          "backendUri": "https://%StorageContainer.HostAndContainer%/{path}%StorageContainer.SasToken%"
       },
       "root": {
           "matchCondition": {
               "route": "/"
           },
-          "backendUri": "%StorageContainer.Uri%/index.html%StorageContainer.SasToken%"
+          "backendUri": "https://%StorageContainer.Uri%/index.html%StorageContainer.SasToken%"
       }
   }
 }
