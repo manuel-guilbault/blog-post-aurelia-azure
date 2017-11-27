@@ -33,10 +33,7 @@
     "functionAppName": "[parameters('appName')]",
     "hostingPlanName": "[parameters('appName')]",
     "blobContainerName": "[parameters('blobContainerName')]",
-    "storageAccountName": "[uniquestring('manuelguilbault.com', 'aurelia-azure', resourceGroup().id, 'storage')]",
-    "storageAccountId": "[concat(resourceGroup().id, '/providers/Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-    "storageHostAndContainer": "[concat(variables('storageAccountName'), '.blob.core.windows.net/', variables('blobContainerName'))]",
-    "storageAccountConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountId'),'2015-05-01-preview').key1)]"
+    "storageAccountName": "[uniquestring('manuelguilbault.com', 'aurelia-azure', resourceGroup().id, 'storage')]"
   },
   "resources": [
     {
@@ -51,7 +48,7 @@
     },
     {
       "type": "Microsoft.Web/serverfarms",
-      "apiVersion": "2015-08-01",
+      "apiVersion": "2015-04-01",
       "name": "[variables('hostingPlanName')]",
       "location": "[resourceGroup().location]",
       "properties": {
@@ -76,15 +73,15 @@
           "appSettings": [
             {
               "name": "AzureWebJobsDashboard",
-              "value": "[variables('storageAccountConnectionString')]"
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"
             },
             {
               "name": "AzureWebJobsStorage",
-              "value": "[variables('storageAccountConnectionString')]"
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"
             },
             {
               "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-              "value": "[variables('storageAccountConnectionString')]"
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"
             },
             {
               "name": "WEBSITE_CONTENTSHARE",
@@ -107,7 +104,7 @@
             },
             {
               "name": "Storage.HostAndContainer",
-              "value": "[variables('storageHostAndContainer')]"
+              "value": "[concat(variables('storageAccountName'), '.blob.core.windows.net/', variables('blobContainerName'))]"
             }
           ]
         }
