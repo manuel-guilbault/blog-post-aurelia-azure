@@ -4,16 +4,16 @@
   "parameters": {
     "appName": {
       "type": "string",
-      "defaultValue": "[concat('func-app-', uniquestring(resourceGroup().id))]",
+      "defaultValue": "[uniquestring('manuelguilbault.com', 'aurelia-azure', resourceGroup().id, 'webapp')]",
       "metadata": {
-        "description": "The name of your webapp."
+        "description": "The name of your proxy webapp."
       }
     },
     "blobContainerName": {
       "type": "string",
       "defaultValue": "web-app-content",
       "metadata": {
-        "description": "The name of the blob container where the web app is stored."
+        "description": "The name of the Storage blob container where the web app is stored."
       }
     },
     "storageAccountType": {
@@ -25,7 +25,7 @@
         "Standard_RAGRS"
       ],
       "metadata": {
-        "description": "Storage Account type"
+        "description": "The type of Storage account."
       }
     }
   },
@@ -33,15 +33,16 @@
     "functionAppName": "[parameters('appName')]",
     "hostingPlanName": "[parameters('appName')]",
     "blobContainerName": "[parameters('blobContainerName')]",
-    "storageAccountName": "[take(replace(variables('functionAppName'), '-', ''), 24)]",
-    "storageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-    "storageHostAndContainer": "[concat(variables('storageAccountName'), '.blob.core.windows.net/', variables('blobContainerName'))]"
+    "storageAccountName": "[uniquestring('manuelguilbault.com', 'aurelia-azure', resourceGroup().id, 'storage')]",
+    "storageAccountId": "[concat(resourceGroup().id, '/providers/Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+    "storageHostAndContainer": "[concat(variables('storageAccountName'), '.blob.core.windows.net/', variables('blobContainerName'))]",
+    "storageAccountConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountId'),'2015-05-01-preview').key1)]"
   },
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageAccountName')]",
-      "apiVersion": "2016-12-01",
+      "apiVersion": "2017-06-01",
       "location": "[resourceGroup().location]",
       "kind": "Storage",
       "sku": {
@@ -50,7 +51,7 @@
     },
     {
       "type": "Microsoft.Web/serverfarms",
-      "apiVersion": "2015-04-01",
+      "apiVersion": "2015-08-01",
       "name": "[variables('hostingPlanName')]",
       "location": "[resourceGroup().location]",
       "properties": {
@@ -75,15 +76,15 @@
           "appSettings": [
             {
               "name": "AzureWebJobsDashboard",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountId'),'2015-05-01-preview').key1)]"
+              "value": "[variables('storageAccountConnectionString')]"
             },
             {
               "name": "AzureWebJobsStorage",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountId'),'2015-05-01-preview').key1)]"
+              "value": "[variables('storageAccountConnectionString')]"
             },
             {
               "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountId'),'2015-05-01-preview').key1)]"
+              "value": "[variables('storageAccountConnectionString')]"
             },
             {
               "name": "WEBSITE_CONTENTSHARE",
@@ -118,11 +119,11 @@
       "type": "string",
       "value": "[variables('functionAppName')]"
     },
-    "StorageAccount.Name": {
+    "Storage.Account.Name": {
       "type": "string",
       "value": "[variables('storageAccountName')]"
     },
-    "StorageContainer.Name": {
+    "Storage.Container.Name": {
       "type": "string",
       "value": "[variables('blobContainerName')]"
     }
