@@ -9,7 +9,7 @@ module.exports = function(context, request) {
   sendGetRequest(backendUrl, (error, response) => {
     if (error) {
       context.log.error(`Request to ${backendUrl} failed: ${error}`);
-      context.done(null, { status: 500 });
+      context.done(null, { status: 500, body: '500 Internal Server Error' });
 
     } else if (response.status === 404) {
       const indexUrl = getBackendUrl('index.html');
@@ -17,7 +17,7 @@ module.exports = function(context, request) {
       sendGetRequest(indexUrl, (error, response) => {
         if (error) {
           context.log.error(`Request to ${indexUrl} failed: ${error}`);
-          context.done(null, { status: 500 });
+          context.done(null, { status: 500, body: '500 Internal Server Error' });
         } else {
           context.log.info(`Request to ${indexUrl} returned ${response.statusCode}`);
           context.done(null, response);
