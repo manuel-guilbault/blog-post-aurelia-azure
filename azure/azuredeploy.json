@@ -9,11 +9,11 @@
         "description": "The name of your proxy webapp."
       }
     },
-    "blobContainerName": {
+    "storageAccountName": {
       "type": "string",
-      "defaultValue": "web-app-content",
+      "defaultValue": "[uniquestring('manuelguilbault.com', 'aurelia-azure', resourceGroup().id, 'storage')]",
       "metadata": {
-        "description": "The name of the Storage blob container where the web app is stored."
+        "description": "The name of the Storage account."
       }
     },
     "storageAccountType": {
@@ -27,13 +27,21 @@
       "metadata": {
         "description": "The type of Storage account."
       }
+    },
+    "blobContainerName": {
+      "type": "string",
+      "defaultValue": "web-app-content",
+      "metadata": {
+        "description": "The name of the Storage blob container where the web app is stored."
+      }
     }
   },
   "variables": {
     "functionAppName": "[parameters('appName')]",
     "hostingPlanName": "[parameters('appName')]",
-    "blobContainerName": "[parameters('blobContainerName')]",
-    "storageAccountName": "[uniquestring('manuelguilbault.com', 'aurelia-azure', resourceGroup().id, 'storage')]"
+    "storageAccountName": "[parameters('storageAccountName')]",
+    "storageAccountType": "[parameters('storageAccountType')]",
+    "blobContainerName": "[parameters('blobContainerName')]"
   },
   "resources": [
     {
@@ -43,7 +51,7 @@
       "location": "[resourceGroup().location]",
       "kind": "Storage",
       "sku": {
-        "name": "[parameters('storageAccountType')]"
+        "name": "[variables('storageAccountType')]"
       }
     },
     {
