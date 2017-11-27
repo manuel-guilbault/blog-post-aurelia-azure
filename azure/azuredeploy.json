@@ -106,7 +106,7 @@
               "value": "6.5.0"
             },
             {
-              "name": "StorageContainer.HostAndContainer",
+              "name": "Storage.HostAndContainer",
               "value": "[variables('storageHostAndContainer')]"
             }
           ]
