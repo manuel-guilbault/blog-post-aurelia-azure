@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json.schemastore.org/proxies",
+  "proxies": {
+    "acme-protocol": {
+      "matchCondition": {
+        "route": "/.well-known/acme-challenge/{*rest}"
+      },
+      "backendUri": "https://%WEBSITE_HOSTNAME%/acme-challenge/{rest}"
+    }
+  }
+}

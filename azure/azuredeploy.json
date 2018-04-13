@@ -4,7 +4,6 @@
   "parameters": {
     "appName": {
       "type": "string",
-      "defaultValue": "[uniquestring('manuelguilbault.com', 'aurelia-azure', resourceGroup().id, 'webapp')]",
       "metadata": {
         "description": "The name of your proxy webapp."
       }
@@ -34,14 +33,43 @@
       "metadata": {
         "description": "The name of the Storage blob container where the web app is stored."
       }
+    },
+    "domain": {
+      "type": "string",
+      "metadata": {
+        "description": "The custom domain to bind the webapp to."
+      }
+    },
+    "letsEncryptTenant": {
+      "type": "string",
+      "metadata": {
+        "description": "The Azure Active Directory tenant for Let's Encrypt extension."
+      }
+    },
+    "letsEncryptClientId": {
+      "type": "string",
+      "metadata": {
+        "description": "The Azure Active Directory app id for Let's Encrypt extension."
+      }
+    },
+    "letsEncryptClientSecret": {
+      "type": "string",
+      "metadata": {
+        "description": "The Azure Active Directory app secret for Let's Encrypt extension."
+      }
     }
   },
   "variables": {
+    "tenant": "[parameters('tenant')]",
     "functionAppName": "[parameters('appName')]",
     "hostingPlanName": "[parameters('appName')]",
     "storageAccountName": "[parameters('storageAccountName')]",
     "storageAccountType": "[parameters('storageAccountType')]",
-    "blobContainerName": "[parameters('blobContainerName')]"
+    "blobContainerName": "[parameters('blobContainerName')]",
+    "domain": "[parameters('domain')]",
+    "letsEncryptTenant": "[parameters('letsEncryptTenant')]",
+    "letsEncryptClientId": "[parameters('letsEncryptClientId')]",
+    "letsEncryptClientSecret": "[parameters('letsEncryptClientSecret')]"
   },
   "resources": [
     {
@@ -77,6 +105,7 @@
       ],
       "properties": {
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "httpsOnly": true,
         "siteConfig": {
           "appSettings": [
             {
@@ -113,17 +142,56 @@
             {
               "name": "Storage.HostAndContainer",
               "value": "[concat(variables('storageAccountName'), '.blob.core.windows.net/', variables('blobContainerName'))]"
+            },
+            {
+              "name": "letsencrypt:Tenant",
+              "value": "[variables('letsEncryptTenant')]"
+            },
+            {
+              "name": "letsencrypt:SubscriptionId",
+              "value": "[subscription().subscriptionId]"
+            },
+            {
+              "name": "letsencrypt:ClientId",
+              "value": "[variables('letsEncryptClientId')]"
+            },
+            {
+              "name": "letsencrypt:ClientSecret",
+              "value": "[variables('letsEncryptClientSecret')]"
             }
           ]
         }
-      }
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "name": "letsencrypt",
+          "type": "siteextensions",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', variables('functionAppName'))]"
+          ],
+          "properties": {}
+        },
+        {
+          "apiVersion": "2015-08-01",
+          "type": "hostNameBindings",
+          "name": "[variables('domain')]",
+          "dependsOn": [
+            "[concat('Microsoft.Web/sites/', variables('functionAppName'))]"
+          ],
+          "tags": {
+            "displayName": "hostNameBinding"
+          },
+          "properties": {
+            "domainId": null,
+            "hostNameType": "Verified",
+            "siteName": "variables('functionAppName')"
+          }
+        }
+      ]
     }
   ],
   "outputs": {
-    "AppService.Name": {
-      "type": "string",
-      "value": "[variables('functionAppName')]"
-    },
     "Storage.Account.Name": {
       "type": "string",
       "value": "[variables('storageAccountName')]"

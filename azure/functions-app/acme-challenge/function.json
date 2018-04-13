@@ -1,0 +1,17 @@
+{
+  "bindings": [
+    {
+      "name": "request",
+      "type": "httpTrigger",
+      "direction": "in",
+      "authLevel": "anonymous",
+      "methods": [ "get" ],
+      "route": "acme-challenge/{code}"
+    },
+    {
+      "name": "$return",
+      "type": "http",
+      "direction": "out"
+    }
+  ]
+}
